@@ -20,7 +20,7 @@ import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 
 @Component
-public class CalendarConverter {
+public final class CalendarConverter {
 
     private static final Logger log = LoggerFactory.getLogger(CalendarConverter.class);
 
@@ -71,7 +71,7 @@ public class CalendarConverter {
                                                LocalTime.parse(endTime));
                     return new Event(title, start, end, details);
                 })
-                .collect(collectingAndThen(toList(), Calendar::new));
+                .collect(collectingAndThen(toList(), events -> new Calendar("CIST", events)));
         return calendar.notEmpty() ? Optional.of(calendar) : Optional.empty();
     }
 
