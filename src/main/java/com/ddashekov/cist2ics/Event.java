@@ -1,16 +1,24 @@
 package com.ddashekov.cist2ics;
 
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 
-public record Event(String title, LocalDateTime start, LocalDateTime end, String details) {
+/**
+ * One lesson.
+ *
+ * @param title   the short summary, for example {@code ВМ Лк}
+ * @param start   the start time in the {@code Europe/Kyiv} zone
+ * @param end     the end time in the {@code Europe/Kyiv} zone
+ * @param details the full CIST description, for example {@code ВМ Лк DL КІУКІу-26-1;КІУКІу-26-2}
+ */
+public record Event(String title, ZonedDateTime start, ZonedDateTime end, String details) {
 
     /**
-     * Time zone offset in Kyiv, Ukraine, ignoring the summer light saving fluctuations.
+     * Returns a stable iCalendar UID.
+     *
+     * <p>Calendar clients use the UID to match events between refreshes, so the UID depends only
+     * on the title and the start instant.
      */
-    private static final ZoneOffset KYIV = ZoneOffset.ofHours(2);
-
     public String id() {
-        return "" + title.hashCode() + start.toInstant(KYIV).getEpochSecond();
+        return "%08x-%d@cist2ics".formatted(title.hashCode(), start.toEpochSecond());
     }
 }
